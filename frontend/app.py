@@ -38,7 +38,7 @@ with st.sidebar:
             st.success(f"Claude: {health.get('llm_model', 'enabled')}")
         else:
             st.warning("Claude API key not set — using fallback generator")
-            st.caption(f"Backend URL: {health.get('api_base', 'check BRD_API_BASE')}")
+            st.caption(f"Backend URL: {API_BASE}")
             st.caption("Add ANTHROPIC_API_KEY to backend/.env and restart backend.")
     else:
         st.error("Backend offline")
