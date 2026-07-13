@@ -27,9 +27,9 @@ chmod +x scripts/setup.sh scripts/dev.sh
 ./scripts/dev.sh
 ```
 
-- Streamlit UI: http://127.0.0.1:8501
-- Backend API: http://127.0.0.1:8000
-- Health check: http://127.0.0.1:8000/health
+- Streamlit UI: http://127.0.0.1:8503
+- Backend API: http://127.0.0.1:8005
+- Health check: http://127.0.0.1:8005/health
 
 ## VS Code setup
 
@@ -44,16 +44,16 @@ chmod +x scripts/setup.sh scripts/dev.sh
    cd backend
    source .venv/bin/activate   # Windows: .\.venv\Scripts\activate
    pip install -r requirements.txt
-   uvicorn app.main:app --reload --host 127.0.0.1 --port 8000
+   uvicorn app.main:app --reload --host 127.0.0.1 --port 8005
    ```
 5. Terminal 2 (Streamlit):
    ```bash
    source backend/.venv/bin/activate
    pip install -r frontend/requirements.txt
    cd frontend
-   streamlit run app.py --server.address 127.0.0.1 --server.port 8501
+   streamlit run app.py --server.address 127.0.0.1 --server.port 8503
    ```
-6. Open http://127.0.0.1:8501
+6. Open http://127.0.0.1:8503
 
 ## Workflow
 
@@ -80,6 +80,6 @@ scripts/     setup and development helpers
 | `BRD_CLAUDE_MAX_TOKENS` | `4096` | Max tokens per section |
 | `BRD_UPLOAD_DIR` | `data/uploads` | Uploaded source documents |
 | `BRD_OUTPUT_DIR` | `data/outputs` | Generated BRD files |
-| `BRD_API_BASE` | `http://127.0.0.1:8000` | Backend URL used by Streamlit |
+| `BRD_API_BASE` | `http://127.0.0.1:8005` | Backend URL used by Streamlit |
 
 If `ANTHROPIC_API_KEY` is missing, the app falls back to a basic template generator.

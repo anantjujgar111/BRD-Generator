@@ -16,8 +16,8 @@ class Settings(BaseSettings):
     output_dir: Path = Path("data/outputs")
     cors_origins: list[str] = Field(
         default_factory=lambda: [
-            "http://localhost:8501",
-            "http://127.0.0.1:8501",
+            "http://localhost:8503",
+            "http://127.0.0.1:8503",
         ]
     )
     anthropic_api_key: str | None = None

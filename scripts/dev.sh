@@ -23,14 +23,14 @@ cleanup() {
 }
 trap cleanup EXIT
 
-echo "==> Starting backend on http://127.0.0.1:8000"
+echo "==> Starting backend on http://127.0.0.1:8005"
 cd "$BACKEND_DIR"
-uvicorn app.main:app --host 127.0.0.1 --port 8000 --reload &
+uvicorn app.main:app --host 127.0.0.1 --port 8005 --reload &
 BACKEND_PID=$!
 
-echo "==> Starting Streamlit frontend on http://127.0.0.1:8501"
+echo "==> Starting Streamlit frontend on http://127.0.0.1:8503"
 cd "$FRONTEND_DIR"
-STREAMLIT_SERVER_HEADLESS=true streamlit run app.py --server.address 127.0.0.1 --server.port 8501 --browser.gatherUsageStats false &
+STREAMLIT_SERVER_HEADLESS=true streamlit run app.py --server.address 127.0.0.1 --server.port 8503 --browser.gatherUsageStats false &
 FRONTEND_PID=$!
 
 wait
