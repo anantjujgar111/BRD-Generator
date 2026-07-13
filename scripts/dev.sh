@@ -28,9 +28,9 @@ cd "$BACKEND_DIR"
 uvicorn app.main:app --host 127.0.0.1 --port 8000 --reload &
 BACKEND_PID=$!
 
-echo "==> Starting frontend on http://127.0.0.1:5173"
+echo "==> Starting Streamlit frontend on http://127.0.0.1:8501"
 cd "$FRONTEND_DIR"
-npm run dev -- --host 127.0.0.1 --port 5173 &
+STREAMLIT_SERVER_HEADLESS=true streamlit run app.py --server.address 127.0.0.1 --server.port 8501 --browser.gatherUsageStats false &
 FRONTEND_PID=$!
 
 wait

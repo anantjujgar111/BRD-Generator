@@ -10,11 +10,6 @@ if ! python3 -m venv --help >/dev/null 2>&1; then
   exit 1
 fi
 
-if ! command -v npm >/dev/null; then
-  echo "Node.js/npm is required but not installed."
-  exit 1
-fi
-
 BACKEND_DIR="$ROOT_DIR/backend"
 FRONTEND_DIR="$ROOT_DIR/frontend"
 VENV_DIR="$BACKEND_DIR/.venv"
@@ -29,11 +24,10 @@ source "$VENV_DIR/bin/activate"
 pip install --upgrade pip
 pip install -r "$BACKEND_DIR/requirements.txt"
 
-echo "==> Installing frontend dependencies"
-cd "$FRONTEND_DIR"
-npm install
+echo "==> Installing Streamlit frontend dependencies"
+pip install -r "$FRONTEND_DIR/requirements.txt"
 
 mkdir -p "$BACKEND_DIR/data/uploads" "$BACKEND_DIR/data/outputs"
 
 echo "==> Setup complete"
-echo "Run ./scripts/dev.sh to start backend and frontend"
+echo "Run ./scripts/dev.sh to start backend and Streamlit frontend"

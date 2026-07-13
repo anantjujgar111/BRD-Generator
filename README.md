@@ -1,6 +1,6 @@
 # BRD Generator
 
-LangGraph-based Business Requirements Document (BRD) generator with a FastAPI backend and React frontend.
+LangGraph-based Business Requirements Document (BRD) generator with a FastAPI backend and Streamlit frontend.
 
 ## Features
 
@@ -13,7 +13,6 @@ LangGraph-based Business Requirements Document (BRD) generator with a FastAPI ba
 ## Prerequisites
 
 - Python 3.11+
-- Node.js 20+
 
 ## Quick Start
 
@@ -23,7 +22,7 @@ chmod +x scripts/setup.sh scripts/dev.sh
 ./scripts/dev.sh
 ```
 
-- Frontend: http://127.0.0.1:5173
+- Streamlit UI: http://127.0.0.1:8501
 - Backend API: http://127.0.0.1:8000
 - Health check: http://127.0.0.1:8000/health
 
@@ -39,17 +38,18 @@ pip install -r requirements.txt
 uvicorn app.main:app --reload --host 127.0.0.1 --port 8000
 ```
 
-### Frontend
+### Frontend (Streamlit)
 
 ```bash
+source backend/.venv/bin/activate
+pip install -r frontend/requirements.txt
 cd frontend
-npm install
-npm run dev
+streamlit run app.py --server.address 127.0.0.1 --server.port 8501
 ```
 
 ## Workflow
 
-1. Upload a source document.
+1. Upload a source document in the Streamlit UI.
 2. The backend parses and chunks the content via LangGraph nodes.
 3. Each BRD section is generated and paused for human approval.
 4. Approve or reject sections with optional feedback.
@@ -59,7 +59,7 @@ npm run dev
 
 ```
 backend/     FastAPI + LangGraph workflow
-frontend/    React + Vite UI
+frontend/    Streamlit UI (app.py)
 scripts/     setup and development helpers
 ```
 
@@ -69,4 +69,5 @@ scripts/     setup and development helpers
 | --- | --- | --- |
 | `BRD_UPLOAD_DIR` | `data/uploads` | Uploaded source documents |
 | `BRD_OUTPUT_DIR` | `data/outputs` | Generated BRD files |
-| `BRD_CORS_ORIGINS` | `http://localhost:5173` | Allowed frontend origins |
+| `BRD_CORS_ORIGINS` | `http://localhost:8501` | Allowed frontend origins |
+| `BRD_API_BASE` | `http://127.0.0.1:8000` | Backend URL used by Streamlit |
