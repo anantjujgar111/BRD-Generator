@@ -41,7 +41,19 @@ def generate_section_node(state: WorkflowState) -> WorkflowState:
 
     title = titles[index]
     feedback = state.get("approval_feedback")
-    content = generate_section_content(title, state.get("chunks", []), feedback=feedback)
+    section_id = title.lower().replace(" ", "-")
+    existing = next((section for section in state.get("sections", []) if section["id"] == section_id), None)
+    approved_sections = [
+        section for section in state.get("sections", []) if section.get("status") == "approved"
+    ]
+    content = generate_section_content(
+        title=title,
+        chunks=state.get("chunks", []),
+        feedback=feedback,
+        approved_sections=approved_sections,
+        filename=state.get("filename"),
+        previous_draft=existing["content"] if existing else None,
+    )
     section = build_section(title, content, status="awaiting_approval")
     return {
         "sections": [section],

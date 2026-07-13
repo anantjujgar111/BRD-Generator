@@ -34,6 +34,11 @@ with st.sidebar:
     health = check_health()
     if health and health.get("status") == "ok":
         st.success(f"Backend: {health.get('service', 'online')}")
+        if health.get("llm_enabled"):
+            st.success(f"Claude: {health.get('llm_model', 'enabled')}")
+        else:
+            st.warning("Claude API key not set — using fallback generator")
+            st.caption("Add ANTHROPIC_API_KEY to backend/.env and restart.")
     else:
         st.error("Backend offline")
         st.stop()

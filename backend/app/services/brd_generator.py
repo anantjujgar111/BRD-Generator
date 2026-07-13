@@ -1,5 +1,12 @@
+import logging
 import re
 from collections import Counter
+
+from .claude_client import claude_client
+
+logger = logging.getLogger(__name__)
+
+MAX_SOURCE_CHARS = 12000
 
 
 def chunk_text(text: str, chunk_size: int = 1200, overlap: int = 150) -> list[str]:
@@ -20,6 +27,19 @@ def chunk_text(text: str, chunk_size: int = 1200, overlap: int = 150) -> list[st
             break
         start = max(end - overlap, start + 1)
     return chunks
+
+
+def _section_id(title: str) -> str:
+    return title.lower().replace(" ", "-")
+
+
+def _source_excerpt(chunks: list[str]) -> str:
+    combined = "\n\n".join(chunks).strip()
+    if len(combined) <= MAX_SOURCE_CHARS:
+        return combined
+    head = combined[: int(MAX_SOURCE_CHARS * 0.7)]
+    tail = combined[-int(MAX_SOURCE_CHARS * 0.3) :]
+    return f"{head}\n\n...[truncated]...\n\n{tail}"
 
 
 def _sentences(text: str) -> list[str]:
@@ -48,13 +68,9 @@ def _fallback_sentences(chunks: list[str], limit: int = 4) -> list[str]:
     return sentences[:limit]
 
 
-def _section_id(title: str) -> str:
-    return title.lower().replace(" ", "-")
-
-
-def generate_section_content(title: str, chunks: list[str], feedback: str | None = None) -> str:
+def _generate_section_heuristic(title: str, chunks: list[str], feedback: str | None = None) -> str:
     if not chunks:
-        return f"No source content was available to draft the {title} section."
+        return f"### {title}\n\nNo source content was available to draft this section."
 
     keyword_map = {
         "Executive Summary": ["purpose", "scope", "objective", "summary", "overview"],
@@ -72,9 +88,7 @@ def generate_section_content(title: str, chunks: list[str], feedback: str | None
     }
 
     keywords = keyword_map.get(title, ["requirement"])
-    selected = _keyword_sentences(chunks, keywords)
-    if not selected:
-        selected = _fallback_sentences(chunks)
+    selected = _keyword_sentences(chunks, keywords) or _fallback_sentences(chunks)
 
     if feedback:
         selected = [f"Revision note: {feedback}", *selected[:3]]
@@ -93,7 +107,7 @@ def generate_section_content(title: str, chunks: list[str], feedback: str | None
 
     if title == "Executive Summary":
         lines = [
-            "### Executive Summary",
+            f"### {title}",
             "",
             "**Purpose**",
             selected[0] if selected else "Define the business problem and expected outcomes.",
@@ -104,15 +118,6 @@ def generate_section_content(title: str, chunks: list[str], feedback: str | None
             "**Business Objectives**",
             selected[2] if len(selected) > 2 else "Deliver measurable improvements aligned with stakeholder goals.",
         ]
-    elif title == "Implementation Plan":
-        lines.extend(
-            [
-                "",
-                "**Phases**: Planning, Design, Development, Testing, Deployment",
-                "**Timeline**: To be finalized after requirements sign-off",
-                "**Resources**: Product, engineering, QA, and business stakeholders",
-            ]
-        )
     elif title == "Risk Assessment":
         lines.extend(
             [
@@ -120,8 +125,6 @@ def generate_section_content(title: str, chunks: list[str], feedback: str | None
                 "| Risk | Impact | Probability | Mitigation |",
                 "| --- | --- | --- | --- |",
                 "| Technical complexity | High | Medium | Prototype critical integrations early |",
-                "| Scope creep | High | Medium | Enforce change control and approvals |",
-                "| Resource constraints | Medium | Low | Maintain contingency staffing plan |",
             ]
         )
     elif title == "Stakeholder Analysis":
@@ -131,9 +134,6 @@ def generate_section_content(title: str, chunks: list[str], feedback: str | None
                 "| Role | Responsibility | Interest | Influence |",
                 "| --- | --- | --- | --- |",
                 "| Business Owner | Sponsorship and approvals | High | High |",
-                "| Business Analyst | Requirements and validation | High | Medium |",
-                "| Development Team | Design and implementation | High | Medium |",
-                "| End Users | Acceptance testing and feedback | High | Low |",
             ]
         )
     elif title == "Traceability Matrix":
@@ -144,6 +144,32 @@ def generate_section_content(title: str, chunks: list[str], feedback: str | None
             lines.append(f"| REQ-{index:03d} | {term} |")
 
     return "\n".join(lines)
+
+
+def generate_section_content(
+    title: str,
+    chunks: list[str],
+    feedback: str | None = None,
+    approved_sections: list[dict] | None = None,
+    filename: str | None = None,
+    previous_draft: str | None = None,
+) -> str:
+    if claude_client.is_configured:
+        try:
+            return claude_client.generate_section(
+                section_title=title,
+                source_excerpt=_source_excerpt(chunks),
+                approved_sections=approved_sections,
+                filename=filename,
+                feedback=feedback,
+                previous_draft=previous_draft,
+            )
+        except Exception as exc:  # noqa: BLE001
+            logger.exception("Claude generation failed for section %s: %s", title, exc)
+            if not chunks:
+                raise
+
+    return _generate_section_heuristic(title, chunks, feedback=feedback)
 
 
 def build_section(title: str, content: str, status: str = "pending", version: int = 1) -> dict:

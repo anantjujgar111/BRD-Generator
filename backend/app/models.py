@@ -50,6 +50,9 @@ class HealthResponse(BaseModel):
     status: str
     service: str
     version: str = "0.1.0"
+    llm_enabled: bool = False
+    llm_provider: str = "anthropic"
+    llm_model: str | None = None
 
 
 class WorkflowListItem(BaseModel):

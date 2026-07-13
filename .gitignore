@@ -1,5 +1,7 @@
 backend/.venv/
 backend/data/
+backend/.env
+.env
 frontend/.streamlit/*
 !frontend/.streamlit/config.toml
 frontend/node_modules/

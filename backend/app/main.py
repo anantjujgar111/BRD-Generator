@@ -79,7 +79,13 @@ def _serialize_state(workflow_id: str, state: dict) -> WorkflowResponse:
 
 @app.get("/health", response_model=HealthResponse)
 def health() -> HealthResponse:
-    return HealthResponse(status="ok", service="brd-generator-backend")
+    return HealthResponse(
+        status="ok",
+        service="brd-generator-backend",
+        llm_enabled=settings.llm_enabled,
+        llm_provider="anthropic",
+        llm_model=settings.claude_model if settings.llm_enabled else None,
+    )
 
 
 @app.post("/api/upload", response_model=UploadResponse)
