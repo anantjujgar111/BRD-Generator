@@ -2,7 +2,8 @@
 set -euo pipefail
 
 API="http://127.0.0.1:8005"
-DOC="${1:-/home/ubuntu/.cursor/projects/workspace/uploads/BRD-DRAFT-d4def99f_4c98.docx}"
+ROOT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
+DOC="${1:-$ROOT_DIR/samples/input/HHOBI-Migration-Requirements.docx}"
 
 echo "==> Health check"
 curl -s "$API/health" | python3 -m json.tool
