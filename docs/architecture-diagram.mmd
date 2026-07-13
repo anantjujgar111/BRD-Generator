@@ -1,0 +1,50 @@
+flowchart TB
+    subgraph Client["Client Layer"]
+        User["Business User / Browser"]
+    end
+
+    subgraph Frontend["Frontend - Port 8503"]
+        ST["Streamlit UI<br/>frontend/app.py"]
+        API_CLIENT["API Client<br/>frontend/api_client.py"]
+    end
+
+    subgraph Backend["Backend - Port 8005"]
+        FAST["FastAPI REST API<br/>backend/app/main.py"]
+
+        subgraph Workflow["LangGraph Workflow Engine"]
+            LG["StateGraph<br/>workflow/graph.py"]
+            NODES["Workflow Nodes<br/>workflow/nodes.py"]
+        end
+
+        subgraph Services["Business Services"]
+            BRD["BRD Generator<br/>brd_generator.py"]
+            CLAUDE_SVC["Claude Client<br/>claude_client.py"]
+            PARSER["Document Parser<br/>document_parser.py"]
+        end
+    end
+
+    subgraph External["External Services"]
+        CLAUDE_API["Anthropic Claude API<br/>claude-sonnet-4-20250514"]
+    end
+
+    subgraph Storage["Local Storage"]
+        UPLOADS[("data/uploads<br/>Source files")]
+        OUTPUTS[("data/outputs<br/>Generated BRD .docx")]
+        ENV["backend/.env<br/>API keys and config"]
+        MEMORY[("LangGraph MemorySaver<br/>Workflow state in RAM")]
+    end
+
+    User --> ST
+    ST --> API_CLIENT
+    API_CLIENT -->|HTTP REST| FAST
+    FAST --> LG
+    LG --> NODES
+    NODES --> PARSER
+    NODES --> BRD
+    BRD --> CLAUDE_SVC
+    CLAUDE_SVC --> CLAUDE_API
+    NODES --> OUTPUTS
+    FAST --> UPLOADS
+    FAST --> MEMORY
+    ENV --> CLAUDE_SVC
+    ENV --> FAST
