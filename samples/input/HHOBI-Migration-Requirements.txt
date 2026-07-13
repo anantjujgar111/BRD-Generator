@@ -1,0 +1,63 @@
+HHOBI Data Migration - Source Requirements Notes
+Document ID: CG-DOC-98178
+Author: Business Analysis Team
+Date: July 2026
+
+PROJECT OVERVIEW
+The HHOBI application currently runs on a legacy platform. The business wants to migrate it to the Federated Data Lake (FDL) platform to improve scalability, maintainability, and reliability of data processing.
+
+BUSINESS OBJECTIVES
+- Migrate the HHOBI application from the legacy platform to FDL.
+- Reduce operational overhead associated with maintaining legacy infrastructure.
+- Standardize data ingestion, transformation, and consumption using enterprise FDL architecture.
+- Enable future onboarding of additional source systems with minimal development effort.
+- Maintain uninterrupted reporting and extract generation during and after migration.
+
+CURRENT STATE
+- Data is ingested from multiple source systems.
+- Consumption is mainly through reports and extracts.
+- Legacy processes are difficult to scale and maintain.
+
+FUNCTIONAL REQUIREMENTS
+1. The migration must ingest data from multiple sources and process it for downstream consumption.
+2. Reporting and extract generation must continue during and after migration.
+3. Product information must be sourced from the IA_PRODUCTS table.
+4. Customer information must be sourced from the IA_CUSTOMERS table.
+5. Mandatory attributes must be available before records are loaded into curated datasets.
+6. Duplicate records must be identified and handled per data governance standards.
+7. Only valid source records shall be processed.
+
+NON-FUNCTIONAL REQUIREMENTS
+- Improve scalability, maintainability, and reliability of data processing.
+- Maintain data quality, consistency, and compliance throughout migration.
+- Database must support ACID compliance, backup and recovery, and performance optimization based on data volume.
+
+ASSUMPTIONS
+- Source systems will remain available during migration planning.
+- FDL platform capacity will be provisioned before cutover.
+
+CONSTRAINTS
+- Only valid source records shall be processed.
+- Migration must not disrupt existing report consumers.
+
+ACCEPTANCE CRITERIA
+- Reports and extracts work without interruption during and after migration.
+- Curated datasets contain mandatory attributes before load.
+- Duplicate handling follows data governance standards.
+
+STAKEHOLDERS
+- Business Owner: project sponsorship and approvals.
+- Business Analyst: requirements and UAT support.
+- Development Team: design, build, and unit testing.
+- QA Team: system and regression testing.
+- End Users: acceptance testing and feedback.
+
+RISKS
+- Technical complexity of multi-source ingestion.
+- Scope creep from additional source onboarding requests.
+- Resource constraints during parallel legacy and FDL operations.
+- Integration challenges with existing report consumers.
+
+IMPLEMENTATION NOTES
+Suggested phases: Planning, Design, Development, Testing, Deployment.
+Timeline to be finalized after requirements sign-off.
