@@ -1,7 +1,13 @@
 import os
+from pathlib import Path
 from typing import Any
 
 import requests
+from dotenv import load_dotenv
+
+ROOT_DIR = Path(__file__).resolve().parent.parent
+load_dotenv(ROOT_DIR / "backend" / ".env")
+load_dotenv(ROOT_DIR / ".env")
 
 API_BASE = os.environ.get("BRD_API_BASE", "http://127.0.0.1:8005")
 TIMEOUT = 30

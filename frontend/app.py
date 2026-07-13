@@ -2,7 +2,7 @@ import time
 
 import streamlit as st
 
-from api_client import ApiError, approve_section, check_health, download_brd, get_workflow, upload_document
+from api_client import API_BASE, ApiError, approve_section, check_health, download_brd, get_workflow, upload_document
 
 st.set_page_config(page_title="BRD Generator", page_icon="📄", layout="wide")
 
@@ -38,7 +38,8 @@ with st.sidebar:
             st.success(f"Claude: {health.get('llm_model', 'enabled')}")
         else:
             st.warning("Claude API key not set — using fallback generator")
-            st.caption("Add ANTHROPIC_API_KEY to backend/.env and restart.")
+            st.caption(f"Backend URL: {health.get('api_base', 'check BRD_API_BASE')}")
+            st.caption("Add ANTHROPIC_API_KEY to backend/.env and restart backend.")
     else:
         st.error("Backend offline")
         st.stop()
